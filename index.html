@@ -9,9 +9,11 @@
     <div id="map" style="width: 600px; height: 400px"></div>
     <script type="text/javascript">
         var placemark = null;
-        var addPlacemark = function(coords) {
+        var addPlacemark = function(coords, address) {
             placemark ? myMap.geoObjects.remove(placemark) : null;
-            placemark = new ymaps.Placemark(coords);
+            var options = {};
+            address ? options.hintContent = address : null;
+            placemark = new ymaps.Placemark(coords, options);
             placemark.events.add('dblclick', function(evt) {
                 evt.preventDefault();
                 myMap.geoObjects.remove(placemark);
@@ -50,8 +52,9 @@
                 if (xhr.status === 200) {
                     var response = JSON.parse(xhr.responseText).response;
                     var coords = response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos.split(" ");
+                    var address = response.GeoObjectCollection.featureMember[0].GeoObject.metaDataProperty.GeocoderMetaData.text;
                     coords = [parseFloat(coords[1]), parseFloat(coords[0])];
-                    addPlacemark(coords);
+                    addPlacemark(coords, address);
                     myMap.setCenter(coords, 15); 
                 }
             };
