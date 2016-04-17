@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8"> 
-	<title>Карты</title>
+    <title>Карты</title>
     <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
 </head>
 <body>
@@ -10,15 +10,16 @@
     <script type="text/javascript">
         var placemark = null;
         var addPlacemark = function(coords) {
-        	placemark = new ymaps.Placemark(coords);
+            placemark ? myMap.geoObjects.remove(placemark) : null;
+            placemark = new ymaps.Placemark(coords);
             // placemark.name = "Екатеринбург";
             // placemark.description = "Столица Урала";
             placemark.events.add('dblclick', function(evt) {
-            	evt.preventDefault();
-            	myMap.geoObjects.remove(placemark);
+                evt.preventDefault();
+                myMap.geoObjects.remove(placemark);
             });
             placemark.events.add('dragstart', function(evt) {
-          	    // evt.preventDefault();
+                // evt.preventDefault();
                 // myMap.geoObjects.remove(placemark);
                 // var coords = evt.get('coords');
                 // var placemark = new ymaps.Placemark(coords);
@@ -33,10 +34,8 @@
             });    
             myMap.geoObjects.add(placemark);
         };
-
         ymaps.ready(init);
         var myMap;
-
         function init(){     
             myMap = new ymaps.Map("map", {
                 center: [56.50, 60.30],
@@ -45,7 +44,6 @@
             });
             
             myMap.events.add('click', function(evt) {
-                placemark ? myMap.geoObjects.remove(placemark) : null;
                 var coords = evt.get('coords');
                 addPlacemark(coords);
             });
@@ -54,8 +52,8 @@
     <input type="text" class="address-field"></input>
     <input type="submit" class="submit-btn"></input>
     <script>
-    	var submitBtn = document.querySelector(".submit-btn");
-    	var addressField = document.querySelector(".address-field");
+        var submitBtn = document.querySelector(".submit-btn");
+        var addressField = document.querySelector(".address-field");
         submitBtn.addEventListener('click', function() {
             var xhr = new XMLHttpRequest();
             const path = 'https://geocode-maps.yandex.ru/1.x/?format=json&geocode=';
@@ -66,11 +64,21 @@
                     if (xhr.readyState !== 4) {
                         return;
                     }
-                	var response = JSON.parse(xhr.responseText).response;
-                	var coors = response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos.split(" ");
-                    addPlacemark([parseInt(coors[1]), parseInt(coors[0])]);
-                	myMap.panTo([parseInt(coors[1]), parseInt(coors[0])]);	
-                	
+                    var response = JSON.parse(xhr.responseText).response;
+                    var timer = 1000;
+                    response.GeoObjectCollection.featureMember.forEach(function(result) {
+                        setTimeout(function() {
+                            var coors = result.GeoObject.Point.pos.split(" ");
+                            console.log(coors);
+                            addPlacemark([parseInt(coors[1]), parseInt(coors[0])]);
+                            myMap.panTo([parseInt(coors[1]), parseInt(coors[0])]); 
+                        }, timer);
+                        timer += 1000;
+                    });
+                    // var coors = response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos.split(" ");
+                    // addPlacemark([parseInt(coors[1]), parseInt(coors[0])]);
+                    // myMap.panTo([parseInt(coors[1]), parseInt(coors[0])]);  
+                    
                
                 }
             };
