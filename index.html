@@ -65,21 +65,9 @@
                         return;
                     }
                     var response = JSON.parse(xhr.responseText).response;
-                    var timer = 1000;
-                    response.GeoObjectCollection.featureMember.forEach(function(result) {
-                        setTimeout(function() {
-                            var coors = result.GeoObject.Point.pos.split(" ");
-                            console.log(coors);
-                            addPlacemark([parseInt(coors[1]), parseInt(coors[0])]);
-                            myMap.panTo([parseInt(coors[1]), parseInt(coors[0])]); 
-                        }, timer);
-                        timer += 1000;
-                    });
-                    // var coors = response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos.split(" ");
-                    // addPlacemark([parseInt(coors[1]), parseInt(coors[0])]);
-                    // myMap.panTo([parseInt(coors[1]), parseInt(coors[0])]);  
-                    
-               
+                    var coords = response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos.split(" ");
+                    addPlacemark([parseInt(coords[1]), parseInt(coords[0])]);
+                    myMap.panTo([parseInt(coords[1]), parseInt(coords[0])]);
                 }
             };
         });
