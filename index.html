@@ -51,7 +51,7 @@
                     var address = response.GeoObjectCollection.featureMember[0].GeoObject.metaDataProperty.GeocoderMetaData.text;
                     addPlacemark(coords, address);
                 };
-                sendRequest(coords[1] + (', ') + coords[0], cb);
+                sendRequest(coords[1] + ', ' + coords[0], cb);
             });
         }
     </script>
