@@ -12,26 +12,10 @@
         var addPlacemark = function(coords) {
             placemark ? myMap.geoObjects.remove(placemark) : null;
             placemark = new ymaps.Placemark(coords);
-            // placemark.name = "Екатеринбург";
-            // placemark.description = "Столица Урала";
             placemark.events.add('dblclick', function(evt) {
                 evt.preventDefault();
                 myMap.geoObjects.remove(placemark);
             });
-            placemark.events.add('dragstart', function(evt) {
-                // evt.preventDefault();
-                // myMap.geoObjects.remove(placemark);
-                // var coords = evt.get('coords');
-                // var placemark = new ymaps.Placemark(coords);
-                // myMap.geoObjects.add(placemark);Field
-                console.log('dragstart');
-            });
-            placemark.events.add('dragstart', function(evt) {
-                console.log('drag');
-            });
-            placemark.events.add('dragend', function(evt) {
-                console.log('dragend');
-            });    
             myMap.geoObjects.add(placemark);
         };
         ymaps.ready(init);
@@ -66,8 +50,9 @@
                     }
                     var response = JSON.parse(xhr.responseText).response;
                     var coords = response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos.split(" ");
-                    addPlacemark([parseInt(coords[1]), parseInt(coords[0])]);
-                    myMap.panTo([parseInt(coords[1]), parseInt(coords[0])]);
+                    coords = [parseFloat(coords[1]), parseFloat(coords[0])];
+                    addPlacemark(coords);
+                    myMap.setCenter(coords, 15); 
                 }
             };
         });
