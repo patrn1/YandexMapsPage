@@ -9,6 +9,20 @@
     <div id="map" style="width: 600px; height: 400px"></div>
     <script type="text/javascript">
         var placemark = null;
+        var sendRequest = function(geocode, cb) {
+            var xhr = new XMLHttpRequest();
+            const path = 'https://geocode-maps.yandex.ru/1.x/?format=json&geocode=';
+            xhr.open('GET', path + geocode);
+            xhr.send();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState !== 4) {
+                    return;
+                }
+                if (xhr.status === 200) {
+                    cb(xhr); 
+                }
+            };
+        };
         var addPlacemark = function(coords, address) {
             placemark ? myMap.geoObjects.remove(placemark) : null;
             var options = {};
@@ -31,7 +45,13 @@
             
             myMap.events.add('click', function(evt) {
                 var coords = evt.get('coords');
-                addPlacemark(coords);
+                var address = null;
+                var cb = function(xhr) {
+                    var response = JSON.parse(xhr.responseText).response;
+                    var address = response.GeoObjectCollection.featureMember[0].GeoObject.metaDataProperty.GeocoderMetaData.text;
+                    addPlacemark(coords, address);
+                };
+                sendRequest(coords[1] + (', ') + coords[0], cb);
             });
         }
     </script>
@@ -41,23 +61,15 @@
         var submitBtn = document.querySelector(".submit-btn");
         var addressField = document.querySelector(".address-field");
         submitBtn.addEventListener('click', function() {
-            var xhr = new XMLHttpRequest();
-            const path = 'https://geocode-maps.yandex.ru/1.x/?format=json&geocode=';
-            xhr.open('GET', path + addressField.value);
-            xhr.send();
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState !== 4) {
-                    return;
-                }
-                if (xhr.status === 200) {
-                    var response = JSON.parse(xhr.responseText).response;
-                    var coords = response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos.split(" ");
-                    var address = response.GeoObjectCollection.featureMember[0].GeoObject.metaDataProperty.GeocoderMetaData.text;
-                    coords = [parseFloat(coords[1]), parseFloat(coords[0])];
-                    addPlacemark(coords, address);
-                    myMap.setCenter(coords, 15); 
-                }
-            };
+            var cb = function(xhr) {
+                var response = JSON.parse(xhr.responseText).response;
+                var coords = response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos.split(" ");
+                var address = response.GeoObjectCollection.featureMember[0].GeoObject.metaDataProperty.GeocoderMetaData.text;
+                coords = [parseFloat(coords[1]), parseFloat(coords[0])];
+                addPlacemark(coords, address);
+                myMap.setCenter(coords, 15); 
+            }
+            sendRequest(addressField.value, cb);
         });
     </script>
 </body>
