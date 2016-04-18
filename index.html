@@ -58,7 +58,7 @@
                 var coords = nearest.geometry.getCoordinates();
                 var address = nearest.properties.get('name');
                 addPlacemark(coords, address);
-                myMap.setCenter(coords, 15); 
+                myMap.setCenter(coords, 15);
             }
             ymaps.geocode(addressField.value).then(cb);
         });
