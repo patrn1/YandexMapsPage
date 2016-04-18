@@ -17,6 +17,7 @@
             placemark.events.add('dblclick', function(evt) {
                 evt.preventDefault();
                 myMap.geoObjects.remove(placemark);
+                placemark = null;
             });
             myMap.geoObjects.add(placemark);
         };
