@@ -55,11 +55,17 @@
             });
         }
     </script>
-    <input type="text" value="город Екатеринбург, " class="address-field"></input>
+    <input
+        type="text"
+        value="город Екатеринбург, "
+        class="address-field"
+        onfocus="this.selectionStart = this.selectionEnd = this.value.length;"
+    ></input>
     <input type="submit" value="Поиск" class="submit-btn"></input>
     <script>
         var submitBtn = document.querySelector(".submit-btn");
         var addressField = document.querySelector(".address-field");
+        addressField.focus();
         submitBtn.addEventListener('click', function() {
             var cb = function(xhr) {
                 var response = JSON.parse(xhr.responseText).response;
