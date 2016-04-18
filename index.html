@@ -28,7 +28,6 @@
                 zoom: 10,
                 controls: []
             });
-            
             myMap.events.add('click', function(evt) {
                 var coords = evt.get('coords');
                 var address = null;
@@ -45,23 +44,22 @@
         type="text"
         value="город Екатеринбург, "
         class="address-field"
+        autofocus
         onfocus="this.selectionStart = this.selectionEnd = this.value.length;"
     ></input>
-    <input type="submit" value="Поиск" class="submit-btn"></input>
+    <input type="button" value="Поиск" class="submit-btn" onclick="submitHandler()"></input>
     <script>
-        var submitBtn = document.querySelector(".submit-btn");
-        var addressField = document.querySelector(".address-field");
-        addressField.focus();
-        submitBtn.addEventListener('click', function() {
+        var submitHandler = function() {
+            var addressField = document.querySelector('.address-field');
             var cb = function(res) {
                 var nearest = res.geoObjects.get(0);
                 var coords = nearest.geometry.getCoordinates();
                 var address = nearest.properties.get('name');
                 addPlacemark(coords, address);
                 myMap.setCenter(coords, 15);
-            }
+            };
             ymaps.geocode(addressField.value).then(cb);
-        });
+        };
     </script>
 </body>
 </html>
