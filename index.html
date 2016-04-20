@@ -9,7 +9,7 @@
     <div id="map" style="width: 600px; height: 400px"></div>
     <script type="text/javascript">
         var placemark = null;
-        var addPlacemark = function(coords, address) {
+        var setPlacemark = function(coords, address) {
             placemark ? myMap.geoObjects.remove(placemark) : null;
             var options = {};
             address ? options.hintContent = address : null;
@@ -35,7 +35,7 @@
                 var cb = function(res) {
                     var nearest = res.geoObjects.get(0);
                     var address = nearest.properties.get('name');
-                    addPlacemark(coords, address);
+                    setPlacemark(coords, address);
                 };
                 ymaps.geocode(coords).then(cb);
             });
@@ -56,7 +56,7 @@
                 var nearest = res.geoObjects.get(0);
                 var coords = nearest.geometry.getCoordinates();
                 var address = nearest.properties.get('name');
-                addPlacemark(coords, address);
+                setPlacemark(coords, address);
                 myMap.setCenter(coords, 15);
             };
             ymaps.geocode(addressField.value).then(cb);
