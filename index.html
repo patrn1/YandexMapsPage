@@ -9,17 +9,29 @@
     <div id="map" style="width: 600px; height: 400px"></div>
     <script type="text/javascript">
         var placemark = null;
-        var setPlacemark = function(coords, address) {
+        var setPlacemark = function(location, centered) {
             placemark ? myMap.geoObjects.remove(placemark) : null;
-            var options = {};
-            address ? options.hintContent = address : null;
-            placemark = new ymaps.Placemark(coords, options);
-            placemark.events.add('dblclick', function(evt) {
-                evt.preventDefault();
-                myMap.geoObjects.remove(placemark);
-                placemark = null;
-            });
-            myMap.geoObjects.add(placemark);
+            var cb = function(res) {
+                var nearest = res.geoObjects.get(0);
+                if (location instanceof Array) {
+                    var coords = location;
+                } else {
+                    var coords = nearest.geometry.getCoordinates();
+                }
+                var address = nearest.properties.get('name');
+                var options = {hintContent: address};
+                placemark = new ymaps.Placemark(coords, options);
+                if (centered) {
+                     myMap.setCenter(coords, 17);
+                }
+                placemark.events.add('dblclick', function(evt) {
+                    evt.preventDefault();
+                    myMap.geoObjects.remove(placemark);
+                    placemark = null;
+                });
+                myMap.geoObjects.add(placemark);
+            };
+            ymaps.geocode(location).then(cb);
         };
         ymaps.ready(init);
         var myMap;
@@ -31,13 +43,7 @@
             });
             myMap.events.add('click', function(evt) {
                 var coords = evt.get('coords');
-                var address = null;
-                var cb = function(res) {
-                    var nearest = res.geoObjects.get(0);
-                    var address = nearest.properties.get('name');
-                    setPlacemark(coords, address);
-                };
-                ymaps.geocode(coords).then(cb);
+                setPlacemark(coords);
             });
         }
     </script>
@@ -48,18 +54,28 @@
         autofocus
         onfocus="this.selectionStart = this.selectionEnd = this.value.length;"
     />
-    <input type="button" value="Поиск" onclick="submitHandler()" />
+    <input type="button" value="Поиск" onclick="submitHandler()" /><br/>
+    Определить текущее местоположение
+    <input type="button" value="Поиск" onclick="currLocationHandler()" />
     <script>
-        var submitHandler = function() {
+        var submitHandler = function () {
             var addressField = document.querySelector('.address-field');
-            var cb = function(res) {
-                var nearest = res.geoObjects.get(0);
-                var coords = nearest.geometry.getCoordinates();
-                var address = nearest.properties.get('name');
-                setPlacemark(coords, address);
-                myMap.setCenter(coords, 15);
+            setPlacemark(addressField.value, true);
+        };
+        var currLocationHandler = function (checkbox) {
+            var options = {
+                enableHighAccuracy: true,
+                maximumAge: 50000,
+                timeout: 10000
             };
-            ymaps.geocode(addressField.value).then(cb);
+            navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    var coords = [position.coords.latitude, position.coords.longitude];
+                    setPlacemark(coords, true);
+                },
+                function (error) {console.log(error);},
+                options
+            );
         };
     </script>
 </body>
