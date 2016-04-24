@@ -9,7 +9,7 @@
     <div id="map" style="width: 600px; height: 400px"></div>
     <script type="text/javascript">
         var placemark = null;
-        var setPlacemark = function(location, centered) {
+        var setPlacemark = function(location, isCentered) {
             placemark ? myMap.geoObjects.remove(placemark) : null;
             var cb = function(res) {
                 var nearest = res.geoObjects.get(0);
@@ -21,7 +21,7 @@
                 var address = nearest.properties.get('name');
                 var options = {hintContent: address};
                 placemark = new ymaps.Placemark(coords, options);
-                if (centered) {
+                if (isCentered) {
                      myMap.setCenter(coords, 17);
                 }
                 placemark.events.add('dblclick', function(evt) {
