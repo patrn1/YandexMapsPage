@@ -7,6 +7,9 @@
 </head>
 <body>
     <div id="map" style="width: 600px; height: 400px"></div>
+    <script type="text/javascript">
+
+    </script>
     <input type="button" value="Поиск пути" onclick="ymaps.ready(routeFinder)" />
     <script>
         var routeMap;
@@ -25,10 +28,13 @@
             };
             navigator.geolocation.getCurrentPosition(
                 function (position) {
-                    var coords = [position.coords.latitude, position.coords.longitude];
+                    var userCoords = [position.coords.latitude, position.coords.longitude];
+                    // тестовая точка
+                    var placeLatitude = 56.85;
+                    var palceLongitude = 60.60;
                     ymaps.route([
-                        { type: 'wayPoint', point: coords },
-                        { type: 'wayPoint', point: [56.85, 60.60] }
+                        { type: 'wayPoint', point: userCoords },
+                        { type: 'wayPoint', point: [placeLatitude, palceLongitude] }
                     ], {
                         mapStateAutoApply: true
                     }).then(function (route) {
