@@ -13,13 +13,6 @@
         var routeMap;
         $('.add-route-btn').click(function () {ymaps.ready(setRoute);});
         var setRoute = function () {
-            if (!routeMap) {
-                routeMap = new ymaps.Map("map", {
-                    center: [56.85, 60.60],
-                    zoom: 10,
-                    controls: []
-                });
-            }
             var options = {
                 enableHighAccuracy: true,
                 maximumAge: 50000,
@@ -27,6 +20,13 @@
             };
             navigator.geolocation.getCurrentPosition(
                 function (position) {
+                    if (!routeMap) {
+                        routeMap = new ymaps.Map("map", {
+                            center: [56.85, 60.60],
+                            zoom: 10,
+                            controls: []
+                        });
+                    }
                     var userCoords = [position.coords.latitude, position.coords.longitude];
                     // тестовая точка
                     var placeLatitude = 56.85;
